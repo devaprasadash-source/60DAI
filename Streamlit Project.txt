@@ -1,0 +1,102 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(page_title="Kawasaki Showroom", layout="centered")
+
+st.title("🏍️ Kawasaki Bike Showroom")
+
+st.write("Select your favorite Kawasaki bike and explore pricing, EMI options, and booking.")
+
+# Bike Data Dictionary
+bikes = {
+    "Ninja 300": {
+        "price": 5500,
+        "image": "images/ninja300.jpg"
+    },
+    "Ninja 650": {
+        "price": 7800,
+        "image": "images/ninja650.jpg"
+    },
+    "Z900": {
+        "price": 9200,
+        "image": "images/z900.jpg"
+    }
+}
+
+# Select Bike
+bike_model = st.selectbox("Choose Your Bike Model", list(bikes.keys()))
+
+# Show Bike Details
+if bike_model:
+    price = bikes[bike_model]["price"]
+    image = bikes[bike_model]["image"]
+
+    st.image(image, width=400)
+    st.subheader(f"Price: ${price}")
+
+# ---------------- EMI Calculator ---------------- #
+
+st.markdown("---")
+st.header("💰 EMI Calculator")
+
+down_payment = st.number_input("Enter Down Payment ($)", min_value=0, value=500)
+loan_years = st.slider("Select Loan Tenure (Years)", 1, 5, 3)
+interest_rate = st.number_input("Interest Rate (%)", min_value=0.0, value=8.0)
+
+if st.button("Calculate EMI"):
+    loan_amount = price - down_payment
+    monthly_rate = (interest_rate / 100) / 12
+    months = loan_years * 12
+
+    if loan_amount > 0:
+        emi = (loan_amount * monthly_rate * (1 + monthly_rate) ** months) / \
+              ((1 + monthly_rate) ** months - 1)
+
+        st.success(f"Monthly EMI: ${round(emi, 2)}")
+    else:
+        st.error("Down payment cannot be greater than bike price.")
+
+# ---------------- Booking Form ---------------- #
+
+st.markdown("---")
+st.header("📝 Book Your Bike")
+
+with st.form("booking_form"):
+    name = st.text_input("Full Name")
+    email = st.text_input("Email")
+    phone = st.text_input("Phone Number")
+    city = st.text_input("City")
+
+    submitted = st.form_submit_button("Confirm Booking")
+
+    if submitted:
+        if name and email and phone and city:
+            booking_data = {
+                "Name": name,
+                "Email": email,
+                "Phone": phone,
+                "City": city,
+                "Bike Model": bike_model,
+                "Price": price
+            }
+
+            # Store in session state
+            if "bookings" not in st.session_state:
+                st.session_state.bookings = []
+
+            st.session_state.bookings.append(booking_data)
+
+            st.success("✅ Booking Confirmed!")
+        else:
+            st.warning("Please fill all details.")
+
+# ---------------- Display Stored Bookings ---------------- #
+
+st.markdown("---")
+st.header("📋 Customer Bookings")
+
+if "bookings" in st.session_state and st.session_state.bookings:
+    df = pd.DataFrame(st.session_state.bookings)
+    st.dataframe(df)
+else:
+    st.info("No bookings yet.")
