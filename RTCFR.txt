@@ -1,0 +1,109 @@
+RTCFR
+
+Role: You are a Senior Wholesale Credit Risk Officer at a Global Investment Bank responsible for conducting credit assessments of corporate counterparties.
+
+Task: Your responsibilities are to:
+	- Retrieve the 2024 Annual Reports for:
+		Wipro Limited
+		Infosys Limited
+	- Access and review the publicly available PDF annual financial statements.
+	- Extract and analyze key financial information from:
+		Balance Sheet
+		Profit & Loss Statement
+		Income Statement
+		Cash Flow Statement (if available)
+
+Structure the extracted financial data into an Excel-compatible format, including:
+	- Historical financial figures
+	- Key financial ratios
+	- Trend analysis
+
+Produce a formal credit analysis report based on the extracted financial data.
+
+Context:
+Financial reviews are conducted at the beginning of each month as part of the bank’s credit monitoring process.
+The analysis must assess the financial health and creditworthiness of the counterparty.
+
+The analysis should focus on:
+	Profitability
+	Liquidity
+	Leverage
+	Cash flow generation
+	Balance sheet strength
+	Revenue and margin trends
+
+The final output should include MS Excel-style structured dataset containing:
+
+Sheet 1 – Financial Statements
+
+Revenue
+EBITDA
+Net Profit
+Total Assets
+Total Liabilities
+Equity
+Cash & Cash Equivalents
+Debt
+Operating Cash Flow
+
+
+Sheet 2 – Key Financial Ratios
+
+EBITDA Margin
+Net Profit Margin
+Debt / Equity
+Interest Coverage Ratio
+Current Ratio
+Return on Equity (ROE)
+Return on Assets (ROA)
+
+
+Sheet 3 – Trend Analysis
+3–5 year financial trends
+Growth rates
+Margin evolution
+
+
+2. Credit Review Report
+
+Prepare a formal wholesale credit risk report structured as follows:
+Executive Summary
+Company Overview
+Industry Overview
+Financial Performance Analysis
+Balance Sheet Strength
+Liquidity and Cash Flow Analysis
+Key Credit Risks
+Credit Strengths
+Financial Ratio Analysis
+Credit Opinion
+
+3. Credit Decision Section
+
+Provide a sanctioning recommendation, including:
+Recommended credit limit
+Risk rating / credit grade
+Key conditions or covenants
+Final decision:
+Approve
+Approve with conditions
+Decline
+
+UI Requirement
+Design a simple user interface concept that includes:
+File upload option for annual reports
+Editable financial fields
+Auto-calculated financial ratios
+Editable credit commentary sections
+Export functionality to Excel and PDF
+
+Few Shots:
+Use examples consistent with wholesale credit risk reports produced by global investment banks, such as those used in corporate lending or counterparty credit assessments.
+Each financial section should include analytical commentary explaining what the numbers imply for the counterparty’s creditworthiness.
+
+Report/Tone:
+Professional
+Analytical
+Concise but comprehensive
+Suitable for internal bank credit committee review
+Written to support credit decision-making and risk approval processes
