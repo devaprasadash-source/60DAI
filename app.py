@@ -18,60 +18,15 @@ if not api_key:
     st.stop()
 
 # =============================
-# LANGCHAIN IMPORTS (STABLE)
+# LANGCHAIN IMPORTS (CLEAN)
 # =============================
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
+from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-
-
-def query_rag(vector_store, query):
-    try:
-        llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=0.3,
-            api_key=api_key
-        )
-
-        retriever = vector_store.as_retriever(search_kwargs={"k": K_RETRIEVAL})
-
-        prompt = PromptTemplate(
-            template="""
-Use the context below to answer the question.
-
-Context:
-{context}
-
-Question: {question}
-
-Answer:
-""",
-            input_variables=["context", "question"]
-        )
-
-        def format_docs(docs):
-            return "\n\n".join([doc.page_content for doc in docs])
-
-        rag_chain = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough()}
-            | prompt
-            | llm
-            | StrOutputParser()
-        )
-
-        answer = rag_chain.invoke(query)
-
-        docs = retriever.invoke(query)
-
-        return answer, docs
-
-    except Exception as e:
-        st.error(f"❌ Error generating answer: {str(e)}")
-        return None, None
-from langchain_core.prompts import PromptTemplate
 
 # =============================
 # CONFIG
@@ -133,6 +88,13 @@ def query_rag(vector_store, query):
             api_key=api_key
         )
 
+        retriever = vector_store.as_retriever(
+            search_kwargs={"k": K_RETRIEVAL}
+        )
+
+        def format_docs(docs):
+            return "\n\n".join([doc.page_content for doc in docs])
+
         prompt = PromptTemplate(
             template="""
 Use the context below to answer the question.
@@ -147,17 +109,17 @@ Answer:
             input_variables=["context", "question"]
         )
 
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            retriever=vector_store.as_retriever(
-                search_kwargs={"k": K_RETRIEVAL}
-            ),
-            chain_type_kwargs={"prompt": prompt},
-            return_source_documents=True
+        rag_chain = (
+            {"context": retriever | format_docs, "question": RunnablePassthrough()}
+            | prompt
+            | llm
+            | StrOutputParser()
         )
 
-        result = qa_chain({"query": query})
-        return result["result"], result["source_documents"]
+        answer = rag_chain.invoke(query)
+        docs = retriever.invoke(query)
+
+        return answer, docs
 
     except Exception as e:
         st.error(f"❌ Error generating answer: {str(e)}")
