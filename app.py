@@ -1,21 +1,24 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
 import tempfile
 import traceback
 
 # =============================
-# STREAMLIT CONFIG (MUST BE FIRST)
+# STREAMLIT CONFIG (FIRST LINE)
 # =============================
 st.set_page_config(page_title="RAG App", layout="wide")
 
 # =============================
-# LOAD ENV
+# GET API KEY (STREAMLIT CLOUD SAFE)
 # =============================
-load_dotenv(override=True)
+api_key = st.secrets.get("OPENAI_API_KEY", None)
+
+if not api_key:
+    st.error("❌ API Key not found. Add it in Streamlit Secrets.")
+    st.stop()
 
 # =============================
-# LangChain imports
+# LANGCHAIN IMPORTS (STABLE)
 # =============================
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -34,16 +37,8 @@ K_RETRIEVAL = 4
 # =============================
 # UI HEADER
 # =============================
-st.title("🤖 RAG Document Q&A")
-
-# =============================
-# API KEY CHECK
-# =============================
-api_key = os.getenv("OPENAI_API_KEY")
-
-if not api_key:
-    st.error("❌ API Key not found. Please add it in .env file")
-    st.stop()
+st.title("📄 AI Document Assistant")
+st.caption("Upload a PDF and ask questions using AI")
 
 # =============================
 # FUNCTIONS
@@ -108,7 +103,9 @@ Answer:
 
         qa_chain = RetrievalQA.from_chain_type(
             llm=llm,
-            retriever=vector_store.as_retriever(search_kwargs={"k": K_RETRIEVAL}),
+            retriever=vector_store.as_retriever(
+                search_kwargs={"k": K_RETRIEVAL}
+            ),
             chain_type_kwargs={"prompt": prompt},
             return_source_documents=True
         )
@@ -162,6 +159,7 @@ if st.session_state.vector_store:
                     st.write(answer)
 
                     st.subheader("📚 Source Chunks")
+
                     for i, d in enumerate(docs):
                         with st.expander(f"Chunk {i+1}"):
                             st.write(d.page_content)
